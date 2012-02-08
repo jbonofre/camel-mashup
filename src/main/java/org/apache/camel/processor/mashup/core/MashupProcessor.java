@@ -5,8 +5,14 @@ import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.processor.mashup.model.Mashup;
 import org.apache.camel.processor.mashup.model.Page;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,11 +43,34 @@ public class MashupProcessor implements Processor {
         LOGGER.trace("Create the HTTP client");
         HttpClient httpClient = new DefaultHttpClient();
 
-        // TODO check for existing session
+        // TODO check for existing session using a CookieStore
         
         LOGGER.trace("Iterate in the pages");
         for (Page page : mashup.getPages()) {
+            LOGGER.trace("Replacing the headers in the URL");
+            String url = page.getUrl();
+            for (String header : in.getHeaders().keySet()) {
+                url.replace("%" + header + "%", (String) in.getHeader(header));
+            }
             
+            LOGGER.trace("Constructing the HTTP request");
+            HttpUriRequest request = null;
+            if (page.getMethod().equalsIgnoreCase("POST")) {
+                request = new HttpPost(url);
+            } else {
+                request = new HttpGet(url);
+            }
+            
+            HttpResponse response = httpClient.execute(request);
+            HttpEntity entity = response.getEntity();
+            
+            if (page.getExtractors() != null && page.getExtractors().size() > 0) {
+                LOGGER.trace("Populate content to be used by extractors");
+                String content = EntityUtils.toString(entity);
+                LOGGER.trace("Instantiate the extractor");
+            }
+
+
         }
     }
 

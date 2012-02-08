@@ -1,12 +1,14 @@
 package org.apache.camel.processor.mashup.model;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class Page {
     
     private String url;
     private String method;
-    private LinkedList<Extractor> extractors = new LinkedList<Extractor>();
+    private List<Extractor> extractors = new LinkedList<Extractor>();
+    private ErrorHandler errorHandler = null;
 
     public String getUrl() {
         return url;
@@ -16,11 +18,11 @@ public class Page {
         this.url = url;
     }
 
-    public LinkedList<Extractor> getExtractors() {
+    public List<Extractor> getExtractors() {
         return extractors;
     }
 
-    public void setExtractors(LinkedList<Extractor> extractors) {
+    public void setExtractors(List<Extractor> extractors) {
         this.extractors = extractors;
     }
     
@@ -34,6 +36,14 @@ public class Page {
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
+    }
+
+    public void setErrorHandler(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
     }
 
 }

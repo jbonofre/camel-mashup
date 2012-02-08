@@ -1,11 +1,13 @@
 package org.apache.camel.processor.mashup.model;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class Extractor {
     
     private String clazz;
-    private LinkedList<Property> properties = new LinkedList<Property>();
+    private boolean append = true;
+    private List<Property> properties = new LinkedList<Property>();
 
     public String getClazz() {
         return clazz;
@@ -15,11 +17,19 @@ public class Extractor {
         this.clazz = clazz;
     }
 
-    public LinkedList<Property> getProperties() {
+    public boolean isAppend() {
+        return append;
+    }
+
+    public void setAppend(boolean append) {
+        this.append = append;
+    }
+
+    public List<Property> getProperties() {
         return properties;
     }
 
-    public void setProperties(LinkedList<Property> properties) {
+    public void setProperties(List<Property> properties) {
         this.properties = properties;
     }
     

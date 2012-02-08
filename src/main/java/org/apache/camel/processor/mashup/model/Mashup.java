@@ -4,11 +4,12 @@ import org.apache.commons.digester3.Digester;
 
 import java.io.InputStream;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Mashup {
     
     private String id;
-    private LinkedList<Page> pages = new LinkedList<Page>();
+    private List<Page> pages = new LinkedList<Page>();
 
     public String getId() {
         return id;
@@ -18,11 +19,11 @@ public class Mashup {
         this.id = id;
     }
 
-    public LinkedList<Page> getPages() {
+    public List<Page> getPages() {
         return pages;
     }
 
-    public void setPages(LinkedList<Page> pages) {
+    public void setPages(List<Page> pages) {
         this.pages = pages;
     }
     
@@ -48,6 +49,18 @@ public class Mashup {
         digester.addObjectCreate("mashup/page/extractor/property", Property.class);
         digester.addSetProperties("mashup/page/extractor/property");
         digester.addSetNext("mashup/page/extractor/property", "addProperty");
+        
+        digester.addObjectCreate("mashup/page/errorhandler", ErrorHandler.class);
+        digester.addSetProperties("mashup/page/errorhandler");
+        digester.addSetNext("mashup/page/errorhandler", "setErrorHandler");
+
+        digester.addObjectCreate("mashup/page/errorhandler/extractor", Extractor.class);
+        digester.addSetProperties("mashup/page/errorhandler/extractor");
+        digester.addSetNext("mashup/page/errorhandler/extractor", "addExtractor");
+
+        digester.addObjectCreate("mashup/page/errorhandler/extractor/property", Property.class);
+        digester.addSetProperties("mashup/page/errorhandler/extractor/property");
+        digester.addSetNext("mashup/page/errorhandler/extractor/property", "addProperty");
 
         digester.parse(inputStream);
     }

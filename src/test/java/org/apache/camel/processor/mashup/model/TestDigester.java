@@ -3,7 +3,7 @@ package org.apache.camel.processor.mashup.model;
 import org.junit.Test;
 
 import java.io.FileInputStream;
-import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -22,8 +22,8 @@ public class TestDigester {
         assertEquals("test", mashup.getId());
 
         // get the pages
-        LinkedList<Page> pages = mashup.getPages();
-        assertEquals(pages.size(), 2);
+        List<Page> pages = mashup.getPages();
+        assertEquals(pages.size(), 3);
         
         Page page1 = pages.get(0);
         assertEquals("http://www.example.org/page1", page1.getUrl());
@@ -33,19 +33,32 @@ public class TestDigester {
         assertEquals("http://www.example.org/page2", page2.getUrl());
         
         // get page2 extractor
-        LinkedList<Extractor> extractors = page2.getExtractors();
-        assertEquals(extractors.size(), 1);
+        List<Extractor> extractors = page2.getExtractors();
+        assertEquals(1, extractors.size());
         
         // get the extractor
         Extractor extractor = extractors.get(0);
         assertEquals("my.class", extractor.getClazz());
         
         // get the extractor properties
-        LinkedList<Property> properties = extractor.getProperties();
+        List<Property> properties = extractor.getProperties();
         assertEquals(1, properties.size());
         Property property = properties.get(0);
         assertEquals(property.getName(), "name1");
         assertEquals(property.getValue(), "value1");
+        
+        // get the page 3
+        Page page3 = pages.get(2);
+        assertEquals("http://www.example.org/page3", page3.getUrl());
+        Extractor page3Extractor = page3.getExtractors().get(0);
+        assertEquals("other.class", page3Extractor.getClazz());
+        assertEquals(false, page3Extractor.isAppend());
+        
+        ErrorHandler errorHandler = page3.getErrorHandler();
+        assertEquals(1, errorHandler.getExtractors().size());
+        Extractor errorHandlerExtractor = errorHandler.getExtractors().get(0);
+        assertEquals("my.class", errorHandlerExtractor.getClazz());
+        
     }
 
 }
