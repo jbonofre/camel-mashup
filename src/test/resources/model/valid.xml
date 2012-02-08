@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mashup id="test">
+
+    <page url="http://www.example.org/page1" method="POST">
+
+    </page>
+
+    <page url="http://www.example.org/page2">
+        <extractor clazz="my.class">
+            <property name="name1" value="value1"/>
+        </extractor>
+    </page>
+
+</mashup>
