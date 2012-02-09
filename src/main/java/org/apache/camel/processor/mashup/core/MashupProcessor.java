@@ -62,7 +62,7 @@ public class MashupProcessor implements Processor {
             
             LOGGER.trace("Constructing the HTTP request");
             HttpUriRequest request = null;
-            if (page.getMethod().equalsIgnoreCase("POST")) {
+            if (page.getMethod() != null && page.getMethod().equalsIgnoreCase("POST")) {
                 request = new HttpPost(url);
             } else {
                 request = new HttpGet(url);
@@ -74,21 +74,58 @@ public class MashupProcessor implements Processor {
             if (page.getExtractors() != null && page.getExtractors().size() > 0) {
                 LOGGER.trace("Populate content to be used by extractors");
                 String content = EntityUtils.toString(entity);
-                for (Extractor extractor : page.getExtractors()) {
-                    Class extractorClass = Class.forName(extractor.getClazz());
-                    IExtractor extractorBean = (IExtractor) extractorClass.newInstance();
-                    for (Property property : extractor.getProperties()) {
-                        PropertyUtils.setProperty(extractorBean, property.getName(), property.getValue());
+                try {
+                    for (Extractor extractor : page.getExtractors()) {
+                        IExtractor extractorBean = this.instantiateExtractor(extractor);
+                        String extractedData = extractorBean.extract(content);
+                        if (extractor.isMandatory() && (extractedData == null || extractedData.isEmpty())) {
+                            throw new IllegalStateException("Extracted data is empty");
+                        }
+                        if (extractor.isAppend()) {
+                            out.setBody(out.getBody() + "<extract id=\"" + extractor.getId() + "\"><![CDATA[[" + extractedData + "]]></extract>");
+                        }
                     }
-                    String extractedData = extractorBean.extract(content);
-                    if (extractor.isAppend()) {
-                        out.setBody(out.getBody() + extractedData);
+                } catch (Exception e) {
+                    LOGGER.warn("An exception occurs during the extraction",e);
+                    LOGGER.warn("Calling the error handler");
+                    exchange.setException(e);
+                    out.setFault(true);
+                    out.setBody(null);
+                    if (page.getErrorHandler() != null && page.getErrorHandler().getExtractors() != null
+                            && page.getErrorHandler().getExtractors().size() > 0) {
+                        LOGGER.trace("Processing the error handler extractor");
+                        for (Extractor extractor : page.getErrorHandler().getExtractors()) {
+                            IExtractor extractorBean = this.instantiateExtractor(extractor);
+                            String extractedData = extractorBean.extract(content);
+                            if (extractedData != null) {
+                                out.setBody(out.getBody() + extractedData);
+                            }
+                        }
                     }
                 }
 
             }
 
         }
+    }
+
+    /**
+     * Create a new instance of a extractor
+     * 
+     * @param extractor the extractor model object.
+     * @return the IExtractor object.
+     */
+    protected IExtractor instantiateExtractor(Extractor extractor) throws Exception {
+        LOGGER.trace("Create new instance of " + extractor.getClazz() + " extractor");
+        Class extractorClass = Class.forName(extractor.getClazz());
+        IExtractor extractorBean = (IExtractor) extractorClass.newInstance();
+        if (extractor.getProperties() != null) {
+            for (Property property : extractor.getProperties()) {
+                LOGGER.trace("Setting property " + property.getName() + " with value " + property.getValue());
+                PropertyUtils.setProperty(extractorBean, property.getName(), property.getValue());   
+            }
+        }
+        return extractorBean;
     }
 
     public String getStore() {

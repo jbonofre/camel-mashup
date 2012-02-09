@@ -17,8 +17,10 @@
         <camel.version>2.8.2</camel.version>
         <commons-beanutils.version>1.8.3</commons-beanutils.version>
         <commons-digester.version>3.2</commons-digester.version>
+        <commons-io.version>2.1</commons-io.version>
         <httpclient.version>4.1.3</httpclient.version>
         <junit.version>4.10</junit.version>
+        <jsoup.version>1.6.1</jsoup.version>
         <slf4j.version>1.6.4</slf4j.version>
     </properties>
 
@@ -49,12 +51,23 @@
             <version>${httpclient.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
 
         <!-- test -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -84,9 +97,12 @@
                             org.apache.camel.processor.mashup*;version=${project.version};-split-package:=merge-first
                         </Export-Package>
                         <Import-Package>
+                            javax.xml.xpath,
                             org.apache.camel;version="[2.8,3)",
+                            org.apache.commons.beanutils;version="[1.8,2)",
                             org.apache.commons.digester3;version="[3.2,4.0)",
                             org.apache.http*;version="[4.1,5)",
+                            org.jsoup*;version="[1.6,2)",
                             org.slf4j*;resolution:=optional
                         </Import-Package>
                     </instructions>
