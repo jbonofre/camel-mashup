@@ -82,7 +82,7 @@ public class MashupProcessor implements Processor {
                             throw new IllegalStateException("Extracted data is empty");
                         }
                         if (extractor.isAppend()) {
-                            out.setBody(out.getBody() + "<extract id=\"" + extractor.getId() + "\"><![CDATA[[" + extractedData + "]]></extract>");
+                            out.setBody(out.getBody() + "<extract id=\"" + extractor.getId() + "\"><![CDATA[" + extractedData + "]]></extract>");
                         }
                     }
                 } catch (Exception e) {
