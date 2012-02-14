@@ -18,8 +18,9 @@ public class XPathExtractor implements IExtractor {
         XPathFactory xPathFactory = XPathFactory.newInstance();
         XPath xPath = xPathFactory.newXPath();
 
-        // TODO convert to xhtml using tidymarkup
+        // TODO convert to xhtml using jtidy
         // TODO add xquery extractor
+        // TODO add regex extractor
 
         return xPath.evaluate(path, html);
     }

@@ -116,7 +116,7 @@ public class MashupProcessor implements Processor {
      * @return the IExtractor object.
      */
     protected IExtractor instantiateExtractor(Extractor extractor) throws Exception {
-        LOGGER.trace("Create new instance of " + extractor.getClazz() + " extractor");
+        LOGGER.trace("Create new instance of " + extractor.getClazz() + "extractor");
         Class extractorClass = Class.forName(extractor.getClazz());
         IExtractor extractorBean = (IExtractor) extractorClass.newInstance();
         if (extractor.getProperties() != null) {

@@ -6,8 +6,6 @@ import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultExchange;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Unit test on the mashup processor.
  */
