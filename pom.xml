@@ -15,11 +15,12 @@
 
     <modules>
         <module>processor</module>
+        <module>assembly</module>
     </modules>
 
     <properties>
         <camel.version>2.8.2</camel.version>
-        <commons-beanutils.version>1.8.3</commons-beanutils.version>
+        <commons-beanutils.version>1.8.2</commons-beanutils.version>
         <commons-digester.version>3.2</commons-digester.version>
         <commons-io.version>2.1</commons-io.version>
         <httpclient.version>4.1.3</httpclient.version>
@@ -33,11 +34,6 @@
             <dependency>
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils-core</artifactId>
-                <version>${commons-beanutils.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-beanutils</groupId>
-                <artifactId>commons-beanutils-bean-collections</artifactId>
                 <version>${commons-beanutils.version}</version>
             </dependency>
             <dependency>

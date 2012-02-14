@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+
+    <id>src</id>
+
+    <formats>
+        <format>zip</format>
+        <format>tar.gz</format>
+    </formats>
+
+    <fileSets>
+
+        <!-- Binary files -->
+        <fileSet>
+            <directory>..</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>**/*.jpeg</include>
+                <include>**/*.jpg</include>
+                <include>**/*.gif</include>
+                <include>**/*.png</include>
+                <include>**/*.jar</include>
+                <include>**/*.keystore</include>
+                <include>**/*.cert</include>
+            </includes>
+            <excludes>
+                <exclude>**/eclipse-classes/**</exclude>
+                <exclude>**/target/**</exclude>
+            </excludes>
+        </fileSet>
+
+        <!-- Text files -->
+        <fileSet>
+            <directory>..</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <excludes>
+                <exclude>**/*.jpeg</exclude>
+                <exclude>**/*.jpg</exclude>
+                <exclude>**/*.gif</exclude>
+                <exclude>**/*.png</exclude>
+                <exclude>**/*.jar</exclude>
+                <exclude>**/*.keystore</exclude>
+                <exclude>**/*.cert</exclude>
+                <exclude>**/target/**</exclude>
+                <exclude>**/build/**</exclude>
+                <exclude>**/eclipse-classes/**</exclude>
+                <exclude>**/.*</exclude>
+                <exclude>**/.*/**</exclude>
+
+                <exclude>**/surefire*</exclude>
+                <exclude>**/svn-commit*</exclude>
+
+                <exclude>**/*.iml</exclude>
+                <exclude>**/*.iws</exclude>
+                <exclude>**/*.ipr</exclude>
+            </excludes>
+            <lineEnding>dos</lineEnding>
+        </fileSet>
+
+    </fileSets>
+
+</assembly>
