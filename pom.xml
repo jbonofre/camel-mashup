@@ -96,6 +96,7 @@
             </plugins>
         </pluginManagement>
         <extensions>
+            <!-- Enabling the use of FTP -->
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ftp</artifactId>
@@ -116,6 +117,11 @@
             <name>Nanthrax Maven Repository</name>
             <url>ftp://maven.nanthrax.net/var/www/maven</url>
         </repository>
+        <site>
+            <id>nanthrax</id>
+            <name>Nanthrax Maven Repository</name>
+            <url>ftp://maven.nanthrax.net/var/www/maven</url>
+        </site>
     </distributionManagement>
 
 </project>
