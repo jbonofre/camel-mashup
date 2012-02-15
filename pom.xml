@@ -120,7 +120,7 @@
         <site>
             <id>nanthrax</id>
             <name>Nanthrax Maven Repository</name>
-            <url>ftp://maven.nanthrax.net/var/www/maven</url>
+            <url>ftp://maven.nanthrax.net/var/www/maven/site/camel-mashup</url>
         </site>
     </distributionManagement>
 
