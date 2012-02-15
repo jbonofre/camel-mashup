@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mashup id="test">
 
+    <cookie name="%LOGIN%" value="value" version="0" domain="mydomain.com" path="/"/>
+
     <page url="http://www.example.org/page1" method="POST">
 
     </page>

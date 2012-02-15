@@ -4,18 +4,16 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.processor.mashup.api.IExtractor;
-import org.apache.camel.processor.mashup.model.Extractor;
-import org.apache.camel.processor.mashup.model.Mashup;
-import org.apache.camel.processor.mashup.model.Page;
-import org.apache.camel.processor.mashup.model.Property;
+import org.apache.camel.processor.mashup.model.*;
 import org.apache.commons.beanutils.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +46,23 @@ public class MashupProcessor implements Processor {
         mashup.digeste(fileInputStream);
         
         LOGGER.trace("Create the HTTP client");
-        HttpClient httpClient = new DefaultHttpClient();
+        DefaultHttpClient httpClient = new DefaultHttpClient();
 
-        // TODO check for existing session using a CookieStore
+        BasicCookieStore cookieStore = CookieStore.getInstance();
+        for (Cookie cookie : mashup.getCookies()) {
+            String name = cookie.getName();
+            String value = cookie.getValue();
+            for (String header : in.getHeaders().keySet()) {
+                name.replace("%" + header + "%", (String) in.getHeader(header));
+                value.replace("%" + header + "%", (String) in.getHeader(header));
+            }
+            BasicClientCookie basicCookie = new BasicClientCookie(name, value);
+            basicCookie.setVersion(cookie.getVersion());
+            basicCookie.setDomain(cookie.getDomain());
+            basicCookie.setPath("/");
+            cookieStore.addCookie(basicCookie);
+        }
+        httpClient.setCookieStore(cookieStore);
         
         LOGGER.trace("Iterate in the pages");
         for (Page page : mashup.getPages()) {

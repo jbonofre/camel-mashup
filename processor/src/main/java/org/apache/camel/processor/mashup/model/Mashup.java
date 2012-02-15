@@ -9,6 +9,7 @@ import java.util.List;
 public class Mashup {
     
     private String id;
+    private List<Cookie> cookies = new LinkedList<Cookie>();
     private List<Page> pages = new LinkedList<Page>();
 
     public String getId() {
@@ -17,6 +18,18 @@ public class Mashup {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public List<Cookie> getCookies() {
+        return cookies;
+    }
+
+    public void setCookies(List<Cookie> cookies) {
+        this.cookies = cookies;
+    }
+    
+    public void addCookie(Cookie cookie) {
+        this.cookies.add(cookie);
     }
 
     public List<Page> getPages() {
@@ -37,6 +50,10 @@ public class Mashup {
         digester.push(this);
 
         digester.addSetProperties("mashup");
+        
+        digester.addObjectCreate("mashup/cookie", Cookie.class);
+        digester.addSetProperties("mashup/cookie");
+        digester.addSetNext("mashup/cookie", "addCookie");
         
         digester.addObjectCreate("mashup/page", Page.class);
         digester.addSetProperties("mashup/page");

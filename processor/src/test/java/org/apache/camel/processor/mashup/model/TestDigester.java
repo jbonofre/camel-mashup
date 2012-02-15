@@ -20,6 +20,10 @@ public class TestDigester {
         mashup.digeste(fileInputStream);
 
         assertEquals("test", mashup.getId());
+        
+        // get the cookies
+        List<Cookie> cookies = mashup.getCookies();
+        assertEquals(cookies.size(), 1);
 
         // get the pages
         List<Page> pages = mashup.getPages();
