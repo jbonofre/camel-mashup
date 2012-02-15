@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+
+    <body>
+
+        <h3>In a Camel Route</h3>
+        <p>
+            Once installed, the processor could be used in a Camel route.
+        </p>
+        <p>
+            The following example show how to use it:
+        </p>
+        <p>
+            <code>
+                <![CDATA[
+<from uri="timer:foo?period=5000"/>
+<setHeader headerName="MASHUP_ID">
+  <constant>scenario1</constant>
+</setHeader>
+<setHeader headerName="LOGIN">
+  <constant>user1</constant>
+</setHeader>
+<to ref="mashup"/>
+<to uri="log:"/>
+                ]]>
+            </code>
+        </p>
+        <p>
+            The MASHUP_ID header is important as it informs the mashup processor which scenario file should be used.
+        </p>
+        <p>
+            The LOGIN header will be replaced in the mashup file when %LOGIN% is used in URL.
+        </p>
+        <p>
+            The mashup ref is a reference to the mashup processor bean. The bean is define using Blueprint or Spring.
+            It looks like:
+        </p>
+        <p>
+            <code>
+                <![CDATA[
+<bean id="mashup" class="org.apache.camel.processor.core.MashupProcessor">
+    <property name="storage" value="c:\path\to\storage"/>
+</bean>
+                ]]>
+            </code>
+        </p>
+        <p>
+            The mashup processor populate the Camel exchange out message with the extracted data. Each extractor is isolated
+            with the extractor tag.
+        </p>
+
+    </body>
+
+</document>

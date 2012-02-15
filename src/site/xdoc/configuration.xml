@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+
+    <body>
+        <h3>Configuration</h3>
+        <p>
+            The mashup processor loads a mashup file. This file describe the navigation between several pages
+            and the data extraction policy.
+        </p>
+        <p>
+            A mashup file looks like:
+        </p>
+        <p>
+            <![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<mashup id="test">
+
+    <cookie name="%LOGIN%" value="value" version="0" domain="mydomain.com" path="/"/>
+
+    <page url="http://www.example.org/page1" method="POST">
+
+    </page>
+
+    <page url="http://www.example.org/page2">
+        <extractor clazz="my.class" mandatory="false">
+            <property name="name1" value="value1"/>
+        </extractor>
+    </page>
+
+    <page url="http://www.example.org/page3">
+        <extractor clazz="other.class" append="false"/>
+        <errorhandler>
+            <extractor clazz="my.class">
+                <property name="name2" value="value2"/>
+            </extractor>
+        </errorhandler>
+    </page>
+
+</mashup>
+            ]]>
+        </p>
+        <p>
+            The cookie tag allows you to "force" the usage of a HTTP cookie. This cookie will be store in a cookie store
+            and can be use between each call. The name and value can use Camel header (with the % flags).
+        </p>
+        <p>
+            You can define several cookies per mashup description.
+        </p>
+        <p>
+            The page tag is a HTTP page, connecting using the URL attribute. By default, the HTTP method used is GET, but
+            you can specify POST with the method attribute.
+        </p>
+        <p>
+            On each page, you can define a set of extractor. An extractor is a bean implementing IExtractor interface.
+            An extractor is mandatory by default: it means that if it doesn't extract any data, an exception will be raised.
+            You can define an extractor as optional with false for the mandatory attribute.
+            By default, an extractor will populate the Camel exchange out message with the extracted data. If you
+            don't want to populate the out message (for instance, you only want to check if the extract pattern is
+            present), you can set the append attribute to false.
+        </p>
+        <p>
+            When an extractor fails, you can define an error handler. An error handler is another set of extractor.
+            The purpose is to be able to extract error message from the page, in case of first extractor failure.
+        </p>
+        <p>
+            By default, the following extractor are available: CoupleExtractor, RegexExtractor, JsoupExtractor, XPathExtractor.
+        </p>
+    </body>
+
+</document>

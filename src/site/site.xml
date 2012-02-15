@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="camel-mashup">
+
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.0</version>
+    </skin>
+
+    <body>
+
+        <menu name="DOCUMENTATION">
+            <item name="Installation" href="installation.html"/>
+            <item name="In a Camel Route" href="route.html"/>
+            <item name="Mashup Configuration" href="configuration.html"/>
+        </menu>
+
+        <menu name="GET INVOLVED">
+            <item name="Sources" href="source-repository.html"/>
+            <item name="Building" href="building.html"/>
+            <item name="Modules" href="modules.html"/>
+            <item name="Dependencies" href="dependencies.html"/>
+            <item name="Plugins" href="plugins.html"/>
+        </menu>
+
+    </body>
+
+</project>

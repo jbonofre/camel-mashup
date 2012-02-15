@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <body>
+
+        <h3>What is Camel Mashup ?</h3>
+        <p>
+            Camel Mashup is a Apache Camel processor which is able to browse website and extract data from there.
+        </p>
+        <p>
+            It's provided in a Karaf feature format allowing an easy installation on any Karaf runtime embedding Camel.
+        </p>
+
+    </body>
+</document>

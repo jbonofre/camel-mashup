@@ -97,4 +97,18 @@
         </pluginManagement>
     </build>
 
+    <scm>
+        <connection>scm:git:http://github.com/jbonofre/camel-mashup</connection>
+        <developerConnection>scm:git:http://github.com/jbonofre/camel-mashup</developerConnection>
+        <url>http://github.com/jbonofre/camel-mashup</url>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>nanthrax</id>
+            <name>Nanthrax Maven Repository</name>
+            <url>ftp://maven.nanthrax.net/var/www/maven</url>
+        </repository>
+    </distributionManagement>
+
 </project>

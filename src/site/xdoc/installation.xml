@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+
+    <body>
+
+        <h3>Installation</h3>
+        <p>
+            Camel Mashup processor is provided under a Karaf feature format.
+        </p>
+        <p>
+            To install it in a Karaf container, first, register the features repository. In the Karaf shell
+            console, type:
+        </p>
+        <p>
+            <code>
+                karaf@root> features:addurl mvn:org.apache.camel.processor/camel-mashup/2.8.2-SNAPSHOT/xml/features
+            </code>
+        </p>
+        <p>
+            Now, you have the camel-mashup feature available. You can install the feature using:
+        </p>
+        <p>
+            <code>
+                karaf@root> features:install camel-mashup
+            </code>
+        </p>
+
+    </body>
+
+</document>

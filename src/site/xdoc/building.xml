@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+
+    <body>
+        <h3>Building</h3>
+        <p>
+            To build Camel Mashup, you need JDK >= 1.6 and Maven >= 3.0.3.
+        </p>
+        <p>
+            To build the Camel Mashup processor, including the distribution and the unit tests, simply type:
+        </p>
+        <p>
+            <code>
+                mvn clean install
+            </code>
+        </p>
+    </body>
+
+</document>
