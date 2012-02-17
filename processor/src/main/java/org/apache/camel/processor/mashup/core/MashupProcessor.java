@@ -6,6 +6,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.processor.mashup.api.IExtractor;
 import org.apache.camel.processor.mashup.model.*;
 import org.apache.commons.beanutils.*;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -47,23 +48,8 @@ public class MashupProcessor implements Processor {
         
         LOGGER.trace("Create the HTTP client");
         DefaultHttpClient httpClient = new DefaultHttpClient();
+        CookieStore cookieStore = CookieStore.getInstance();
 
-        BasicCookieStore cookieStore = CookieStore.getInstance();
-        for (Cookie cookie : mashup.getCookies()) {
-            String name = cookie.getName();
-            String value = cookie.getValue();
-            for (String header : in.getHeaders().keySet()) {
-                name.replace("%" + header + "%", (String) in.getHeader(header));
-                value.replace("%" + header + "%", (String) in.getHeader(header));
-            }
-            BasicClientCookie basicCookie = new BasicClientCookie(name, value);
-            basicCookie.setVersion(cookie.getVersion());
-            basicCookie.setDomain(cookie.getDomain());
-            basicCookie.setPath("/");
-            cookieStore.addCookie(basicCookie);
-        }
-        httpClient.setCookieStore(cookieStore);
-        
         LOGGER.trace("Iterate in the pages");
         for (Page page : mashup.getPages()) {
             LOGGER.trace("Replacing the headers in the URL");
@@ -80,8 +66,47 @@ public class MashupProcessor implements Processor {
                 request = new HttpGet(url);
             }
             
+            if (mashup.getCookie() != null) {
+                LOGGER.trace("Looking for an existing cookie");
+                String cookieKey = (String) in.getHeader(mashup.getCookie().getKey());
+                if (cookieKey == null) {
+                    LOGGER.warn("Cookie key " + mashup.getCookie().getKey() + " is not found in the Camel \"in\" header");
+                } else {
+                    BasicClientCookie basicClientCookie = cookieStore.getCookie(cookieKey);
+                    if (basicClientCookie == null) {
+                        LOGGER.debug("No cookie yet exist for " + cookieKey);
+                    } else {
+                        LOGGER.debug("A cookie exists for " + cookieKey + " use it for the request");
+                        BasicCookieStore basicCookieStore = new BasicCookieStore();
+                        basicCookieStore.addCookie(basicClientCookie);
+                        httpClient.setCookieStore(basicCookieStore);
+                    }
+                }
+            } else {
+                LOGGER.warn("No cookie configuration defined");
+            }
+            
             HttpResponse response = httpClient.execute(request);
             HttpEntity entity = response.getEntity();
+            
+            if (mashup.getCookie() != null) {
+                String cookieKey = (String) in.getHeader(mashup.getCookie().getKey());
+                if (cookieKey == null) {
+                    LOGGER.warn("Cookie key " + mashup.getCookie().getKey() + " is not found i nthe Camel \"in\" header");
+                } else {
+                    LOGGER.trace("Populating the cookie store");
+                    Header[] headers = response.getHeaders("Set-Cookie");
+                    for (Header header : headers) {
+                        if (header.getName().equals(mashup.getCookie().getName())) {
+                            BasicClientCookie basicClientCookie = new BasicClientCookie(mashup.getCookie().getName(), header.getValue());
+                            basicClientCookie.setDomain(mashup.getCookie().getDomain());
+                            basicClientCookie.setPath(mashup.getCookie().getPath());
+                            cookieStore.addCookie(cookieKey, basicClientCookie);
+                            break;
+                        }
+                    }
+                }
+            }
             
             if (page.getExtractors() != null && page.getExtractors().size() > 0) {
                 LOGGER.trace("Populate content to be used by extractors");

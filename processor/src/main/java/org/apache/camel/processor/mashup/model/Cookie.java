@@ -2,11 +2,18 @@ package org.apache.camel.processor.mashup.model;
 
 public class Cookie {
     
+    private String key;
     private String name;
-    private String value;
-    private int version;
     private String domain;
     private String path;
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public String getName() {
         return name;
@@ -14,22 +21,6 @@ public class Cookie {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
     }
 
     public String getDomain() {

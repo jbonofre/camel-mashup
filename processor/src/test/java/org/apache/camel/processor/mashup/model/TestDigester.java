@@ -22,8 +22,9 @@ public class TestDigester {
         assertEquals("test", mashup.getId());
         
         // get the cookies
-        List<Cookie> cookies = mashup.getCookies();
-        assertEquals(cookies.size(), 1);
+        Cookie cookie = mashup.getCookie();
+        assertNotNull(cookie);
+        assertEquals("JSESSIONID", cookie.getName());
 
         // get the pages
         List<Page> pages = mashup.getPages();
