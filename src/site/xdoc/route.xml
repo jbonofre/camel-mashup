@@ -12,17 +12,15 @@
         </p>
         <p>
             <code>
-                <![CDATA[
-<from uri="timer:foo?period=5000"/>
-<setHeader headerName="MASHUP_ID">
-  <constant>scenario1</constant>
-</setHeader>
-<setHeader headerName="LOGIN">
-  <constant>user1</constant>
-</setHeader>
-<to ref="mashup"/>
-<to uri="log:"/>
-                ]]>
+&lt;from uri="timer:foo?period=5000"/&gt;<br/>
+&lt;setHeader headerName="MASHUP_ID"&gt;<br/>
+&nbsp; &lt;constant&gt;scenario1&lt;/constant&gt;<br/>
+&lt;/setHeader&gt;<br/>
+&lt;setHeader headerName="LOGIN"&gt;<br/>
+&nbsp; &lt;constant&gt;user1&lt;/constant&gt;<br/>
+&lt;/setHeader&gt;<br/>
+&lt;to ref="mashup"/&gt;<br/>
+&lt;to uri="log:"/&gt;
             </code>
         </p>
         <p>
@@ -37,11 +35,9 @@
         </p>
         <p>
             <code>
-                <![CDATA[
-<bean id="mashup" class="org.apache.camel.processor.core.MashupProcessor">
-    <property name="storage" value="c:\path\to\storage"/>
-</bean>
-                ]]>
+&lt;bean id="mashup" class="org.apache.camel.processor.core.MashupProcessor"&gt;<br/>
+&nbsp; &lt;property name="storage" value="c:\path\to\storage"/&gt;<br/>
+&lt;/bean&gt;
             </code>
         </p>
         <p>
