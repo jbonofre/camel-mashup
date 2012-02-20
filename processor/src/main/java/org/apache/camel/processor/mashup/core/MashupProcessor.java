@@ -28,7 +28,9 @@ public class MashupProcessor implements Processor {
     
     private final static transient Logger LOGGER = LoggerFactory.getLogger(MashupProcessor.class);
     
-    private String store;
+    public final static String DEFAULT_STORE = "data/mashup";
+    public final static String MASHUP_ID_HEADER = "MASHUP_ID";
+    public final static String MASHUP_STORE_HEADER = "MASHUP_STORE";
     
     public void process(Exchange exchange) throws Exception {
         LOGGER.trace("Get the Camel in message");
@@ -37,11 +39,15 @@ public class MashupProcessor implements Processor {
         LOGGER.trace("Get the Camel out message");
         Message out = exchange.getOut();
         
-        LOGGER.trace("Get the MASHUP_ID header");
-        String mashupId = (String) in.getHeader("MASHUP_ID");
-        LOGGER.debug("Mashup ID: " + mashupId);
+        LOGGER.trace("Get the {} header", MASHUP_ID_HEADER);
+        String mashupId = (String) in.getHeader(MASHUP_ID_HEADER);
+        LOGGER.debug("Mashup ID: {}", mashupId);
         
-        LOGGER.debug("Digesting the navigation file " + store + "/" + mashupId + ".xml");
+        LOGGER.trace("Get the {} header", MASHUP_STORE_HEADER);
+        String store = (String) in.getHeader(MASHUP_STORE_HEADER);
+        LOGGER.debug("Mashup Store: {}", store);
+        
+        LOGGER.debug("Digesting the navigation file {}/{}.xml", store, mashupId);
         FileInputStream fileInputStream = new FileInputStream(store + "/" + mashupId + ".xml");
         Mashup mashup = new Mashup();
         mashup.digeste(fileInputStream);
@@ -163,14 +169,6 @@ public class MashupProcessor implements Processor {
             }
         }
         return extractorBean;
-    }
-
-    public String getStore() {
-        return store;
-    }
-
-    public void setStore(String store) {
-        this.store = store;
     }
 
 }

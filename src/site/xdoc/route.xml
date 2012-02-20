@@ -16,6 +16,9 @@
 &lt;setHeader headerName="MASHUP_ID"&gt;<br/>
 &nbsp; &lt;constant&gt;scenario1&lt;/constant&gt;<br/>
 &lt;/setHeader&gt;<br/>
+&lt;setHeader headerName="MASHUP_STORE"&gt;<br/>
+&nbsp; &lt;constant&gt;/path/to/store&lt;/constant&gt;<br/>
+&lt;/setHeader&gt;<br/>
 &lt;setHeader headerName="LOGIN"&gt;<br/>
 &nbsp; &lt;constant&gt;user1&lt;/constant&gt;<br/>
 &lt;/setHeader&gt;<br/>
@@ -35,9 +38,7 @@
         </p>
         <p>
             <code>
-&lt;bean id="mashup" class="org.apache.camel.processor.core.MashupProcessor"&gt;<br/>
-&nbsp; &lt;property name="storage" value="c:\path\to\storage"/&gt;<br/>
-&lt;/bean&gt;
+&lt;bean id="mashup" class="org.apache.camel.processor.core.MashupProcessor"/&gt;<br/>
             </code>
         </p>
         <p>

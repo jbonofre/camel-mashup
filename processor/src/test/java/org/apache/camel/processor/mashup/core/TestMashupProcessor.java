@@ -16,9 +16,9 @@ public class TestMashupProcessor {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
         Message in = exchange.getIn();
         in.setHeader("MASHUP_ID", "dummy");
+        in.setHeader("MASHUP_STORE", "target/test-classes/model");
 
         MashupProcessor mashupProcessor = new MashupProcessor();
-        mashupProcessor.setStore("target/test-classes/model");
 
         mashupProcessor.process(exchange);
         
