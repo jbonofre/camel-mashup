@@ -61,6 +61,7 @@ public class Mashup {
         
         digester.addObjectCreate("mashup/page/extractor/property", Property.class);
         digester.addSetProperties("mashup/page/extractor/property");
+        digester.addCallMethod("mashup/page/extractor/property", "setValue", 0);
         digester.addSetNext("mashup/page/extractor/property", "addProperty");
         
         digester.addObjectCreate("mashup/page/errorhandler", ErrorHandler.class);
