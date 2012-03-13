@@ -21,7 +21,9 @@
 
 &nbsp; &lt;page url="http://www.example.org/page2"&gt;<br/>
 &nbsp; &nbsp; &lt;extractor clazz="my.class" mandatory="false"&gt;<br/>
-&nbsp; &nbsp; &nbsp; &lt;property name="name1" value="value1"/&gt;<br/>
+&nbsp; &nbsp; &nbsp; &lt;property name="name1"&gt;<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &lt;!CDATA[[value1]]&gt;<br/>
+&nbsp; &nbsp; &nbsp; &lt;/property&gt;<br/>
 &nbsp; &nbsp; &lt;/extractor&gt;<br/>
 &nbsp; &lt;/page&gt;<br/>
 
@@ -29,7 +31,9 @@
 &nbsp; &nbsp; &lt;extractor clazz="other.class" append="false"/&gt;<br/>
 &nbsp; &nbsp; &lt;errorhandler&gt;<br/>
 &nbsp; &nbsp; &nbsp; &lt;extractor clazz="my.class"&gt;<br/>
-&nbsp; &nbsp; &nbsp; &nbsp; &lt;property name="name2" value="value2"/&gt;<br/>
+&nbsp; &nbsp; &nbsp; &lt;property name="name2"&gt;<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; &lt;!CDATA[[value2]]&gt;<br/>
+&nbsp; &nbsp; &nbsp; &lt;/property&gt;<br/>
 &nbsp; &nbsp; &nbsp; &lt;/extractor&gt;<br/>
 &nbsp; &nbsp; &lt;/errorhandler&gt;<br/>
 &nbsp; &lt;/page&gt;<br/>
