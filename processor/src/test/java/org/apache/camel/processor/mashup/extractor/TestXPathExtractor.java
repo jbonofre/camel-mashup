@@ -20,10 +20,9 @@ public class TestXPathExtractor {
     }    
     
     @Test
-    @Ignore
     public void extract() throws Exception {
         XPathExtractor extractor = new XPathExtractor();
-        extractor.setPath("div");
+        extractor.setPath("//table");
         String extracted = extractor.extract(html);
         System.out.println(extracted);
     }

@@ -20,7 +20,7 @@ public class JsoupExtractor implements IExtractor {
         if (element == null) {
             return null;
         }
-        return element.text();
+        return element.toString();
     }
 
     public String getQuery() {
