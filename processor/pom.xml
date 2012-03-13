@@ -72,7 +72,9 @@
                             org.apache.commons.digester3;version="[3.2,4.0)",
                             org.apache.http*;version="[4.1,5)",
                             org.jsoup*;version="[1.6,2)",
-                            org.slf4j*;resolution:=optional
+                            org.slf4j*;resolution:=optional,
+                            javax.xml.namespace,
+                            org.xml.sax
                         </Import-Package>
                     </instructions>
                 </configuration>

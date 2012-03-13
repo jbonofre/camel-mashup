@@ -11,6 +11,7 @@ import org.jsoup.nodes.Element;
 public class JsoupExtractor implements IExtractor {
     
     private String query;
+    private boolean preserveHtml = true;
     
     public JsoupExtractor() { }
     
@@ -20,7 +21,10 @@ public class JsoupExtractor implements IExtractor {
         if (element == null) {
             return null;
         }
-        return element.toString();
+        if (preserveHtml)
+            return element.toString();
+        else
+            return element.text();
     }
 
     public String getQuery() {
@@ -31,4 +35,12 @@ public class JsoupExtractor implements IExtractor {
         this.query = query;
     }
 
+    public boolean isPreserveHtml() {
+        return preserveHtml;
+    }
+
+    public void setPreserveHtml(boolean preserveHtml) {
+        this.preserveHtml = preserveHtml;
+    }
+    
 }
