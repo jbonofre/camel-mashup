@@ -61,7 +61,8 @@ public class MashupProcessor implements Processor {
             LOGGER.trace("Replacing the headers in the URL");
             String url = page.getUrl();
             for (String header : in.getHeaders().keySet()) {
-                url.replace("%" + header + "%", in.getHeader(header).toString());
+                LOGGER.trace("Replace %{}% with {}", header, in.getHeader(header).toString());
+                url = url.replace("%" + header + "%", in.getHeader(header).toString());
             }
             
             LOGGER.trace("Constructing the HTTP request");

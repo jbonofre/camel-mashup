@@ -17,6 +17,7 @@ public class TestMashupProcessor {
         Message in = exchange.getIn();
         in.setHeader("MASHUP_ID", "dummy");
         in.setHeader("MASHUP_STORE", "target/test-classes/model");
+        in.setHeader("login", "user_test");
 
         MashupProcessor mashupProcessor = new MashupProcessor();
 
