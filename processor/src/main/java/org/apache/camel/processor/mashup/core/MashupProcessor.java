@@ -12,9 +12,12 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,10 +57,15 @@ public class MashupProcessor implements Processor {
         
         LOGGER.trace("Create the HTTP client");
         DefaultHttpClient httpClient = new DefaultHttpClient();
+        ClientConnectionManager mgr = httpClient.getConnectionManager();
+        HttpParams params = httpClient.getParams();
+        httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, mgr.getSchemeRegistry()), params);
+
         CookieStore cookieStore = CookieStore.getInstance();
 
         LOGGER.trace("Iterate in the pages");
         for (Page page : mashup.getPages()) {
+
             LOGGER.trace("Replacing the headers in the URL");
             String url = page.getUrl();
             for (String header : in.getHeaders().keySet()) {
@@ -92,7 +100,7 @@ public class MashupProcessor implements Processor {
             } else {
                 LOGGER.warn("No cookie configuration defined");
             }
-            
+
             HttpResponse response = httpClient.execute(request);
             HttpEntity entity = response.getEntity();
             
