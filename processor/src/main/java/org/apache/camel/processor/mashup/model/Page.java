@@ -7,6 +7,7 @@ public class Page {
     
     private String url;
     private String method;
+    private int wait;
     private List<Extractor> extractors = new LinkedList<Extractor>();
     private ErrorHandler errorHandler = null;
 
@@ -36,6 +37,14 @@ public class Page {
 
     public void setMethod(String method) {
         this.method = method;
+    }
+
+    public int getWait() {
+        return wait;
+    }
+
+    public void setWait(int wait) {
+        this.wait = wait;
     }
 
     public ErrorHandler getErrorHandler() {

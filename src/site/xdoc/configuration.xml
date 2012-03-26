@@ -19,7 +19,7 @@
 
 &nbsp; &lt;page url="http://www.example.org/page1" method="POST"/&gt;<br/>
 
-&nbsp; &lt;page url="http://www.example.org/page2"&gt;<br/>
+&nbsp; &lt;page url="http://www.example.org/page2" wait="3"&gt;<br/>
 &nbsp; &nbsp; &lt;extractor clazz="my.class" mandatory="false"&gt;<br/>
 &nbsp; &nbsp; &nbsp; &lt;property name="name1"&gt;<br/>
 &nbsp; &nbsp; &nbsp; &nbsp; &lt;!CDATA[[value1]]&gt;<br/>
@@ -47,7 +47,8 @@
         </p>
         <p>
             The page tag is a HTTP page, connecting using the URL attribute. By default, the HTTP method used is GET, but
-            you can specify POST with the method attribute.
+            you can specify POST with the method attribute. You can also set a wait on a page. The wait (in seconds)
+            suspends the thread (to wait a redirection for instance).
         </p>
         <p>
             On each page, you can define a set of extractor. An extractor is a bean implementing IExtractor interface.

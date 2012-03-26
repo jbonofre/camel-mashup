@@ -150,6 +150,10 @@ public class MashupProcessor implements Processor {
 
             }
 
+            if (page.getWait() > 0) {
+                Thread.sleep(page.getWait() * 1000);
+            }
+
         }
     }
 

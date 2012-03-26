@@ -7,7 +7,7 @@
 
     </page>
 
-    <page url="http://www.example.org/page2">
+    <page url="http://www.example.org/page2" wait="30">
         <extractor clazz="my.class" mandatory="false">
             <property name="name1">
                 <![CDATA[value1]]>
