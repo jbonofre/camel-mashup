@@ -12,6 +12,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIUtils;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -80,7 +81,6 @@ public class MashupProcessor implements Processor {
             } else {
                 request = new HttpGet(url);
             }
-            
             if (mashup.getCookie() != null) {
                 LOGGER.trace("Looking for an existing cookie");
                 String cookieKey = (String) in.getHeader(mashup.getCookie().getKey());

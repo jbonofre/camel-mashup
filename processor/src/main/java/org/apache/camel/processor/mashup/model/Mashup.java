@@ -52,8 +52,13 @@ public class Mashup {
         digester.addSetNext("mashup/cookie", "setCookie");
         
         digester.addObjectCreate("mashup/page", Page.class);
-        digester.addSetProperties("mashup/page");
+        digester.addSetProperties("mashup/page");     
+        digester.addCallMethod("mashup/page/url", "setUrl", 0);
         digester.addSetNext("mashup/page", "addPage");
+        
+        digester.addObjectCreate("mashup/page/param", Param.class);
+        digester.addSetProperties("mashup/page/param");
+        digester.addSetNext("mashup/page/param", "addParam");
         
         digester.addObjectCreate("mashup/page/extractor", Extractor.class);
         digester.addSetProperties("mashup/page/extractor");

@@ -28,7 +28,7 @@ public class TestDigester {
 
         // get the pages
         List<Page> pages = mashup.getPages();
-        assertEquals(pages.size(), 3);
+        assertEquals(pages.size(), 4);
         
         Page page1 = pages.get(0);
         assertEquals("http://www.example.org/page1", page1.getUrl());
@@ -36,6 +36,7 @@ public class TestDigester {
         
         Page page2 = pages.get(1);
         assertEquals("http://www.example.org/page2", page2.getUrl());
+        assertEquals(30, page2.getWait());
         
         // get page2 extractor
         List<Extractor> extractors = page2.getExtractors();
@@ -63,6 +64,14 @@ public class TestDigester {
         assertEquals(1, errorHandler.getExtractors().size());
         Extractor errorHandlerExtractor = errorHandler.getExtractors().get(0);
         assertEquals("my.class", errorHandlerExtractor.getClazz());
+        
+        // get the page 4
+        Page page4 = pages.get(3);
+        assertEquals("http://www.example.org/page4", page4.getUrl());
+        assertEquals(2, page4.getParams().size());
+        Param param1 = page4.getParams().get(0);
+        assertEquals("param1", param1.getName());
+        assertEquals("value1", param1.getValue());
         
     }
 

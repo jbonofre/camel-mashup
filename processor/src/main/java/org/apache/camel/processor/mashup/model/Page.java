@@ -6,6 +6,7 @@ import java.util.List;
 public class Page {
     
     private String url;
+    private List<Param> params = new LinkedList<Param>();
     private String method;
     private int wait;
     private List<Extractor> extractors = new LinkedList<Extractor>();
@@ -17,6 +18,18 @@ public class Page {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public List<Param> getParams() {
+        return params;
+    }
+
+    public void setParams(List<Param> params) {
+        this.params = params;
+    }
+    
+    public void addParam(Param param) {
+        this.params.add(param);
     }
 
     public List<Extractor> getExtractors() {
