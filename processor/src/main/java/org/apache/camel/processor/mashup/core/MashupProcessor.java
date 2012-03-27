@@ -18,6 +18,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -73,7 +74,7 @@ public class MashupProcessor implements Processor {
                 LOGGER.trace("Replace %{}% with {}", header, in.getHeader(header).toString());
                 url = url.replace("%" + header + "%", in.getHeader(header).toString());
             }
-            
+
             LOGGER.trace("Constructing the HTTP request");
             HttpUriRequest request = null;
             if (page.getMethod() != null && page.getMethod().equalsIgnoreCase("POST")) {
@@ -81,6 +82,13 @@ public class MashupProcessor implements Processor {
             } else {
                 request = new HttpGet(url);
             }
+
+            BasicHttpParams httpParams = new BasicHttpParams();
+            for (Param param : page.getParams()) {
+                httpParams.setParameter(param.getName(), param.getValue());
+            }
+            request.setParams(httpParams);
+
             if (mashup.getCookie() != null) {
                 LOGGER.trace("Looking for an existing cookie");
                 String cookieKey = (String) in.getHeader(mashup.getCookie().getKey());
