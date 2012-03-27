@@ -59,9 +59,9 @@ public class MashupProcessor implements Processor {
         
         LOGGER.trace("Create the HTTP client");
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        //ClientConnectionManager mgr = httpClient.getConnectionManager();
-        //HttpParams params = httpClient.getParams();
-        //httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, mgr.getSchemeRegistry()), params);
+        ClientConnectionManager mgr = httpClient.getConnectionManager();
+        HttpParams params = httpClient.getParams();
+        httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, mgr.getSchemeRegistry()), params);
 
         CookieStore cookieStore = CookieStore.getInstance();
 
