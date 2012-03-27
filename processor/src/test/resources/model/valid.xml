@@ -28,8 +28,8 @@
 
     <page>
         <url><![CDATA[http://www.example.org/page4]]></url>
-        <param name="param1">value1</param>
-        <param name="param2">value2</param>
+        <param name="param1" value="value1"/>
+        <param name="param2" value="value2"/>
     </page>
 
 </mashup>

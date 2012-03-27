@@ -30,8 +30,6 @@ public class TestMashupProcessor {
 
     @Test
     public void real() throws Exception {
-        System.out.println("REAL");
-        
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
         Message in = exchange.getIn();
         in.setHeader("MASHUP_ID", "real");
