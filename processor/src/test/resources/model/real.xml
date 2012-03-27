@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mashup id="real">
+
+    <page wait="3" method="POST">
+        <url><![CDATA[http://blog.nanthrax.net/wp-login.php]]></url>
+        <param name="user_login" value="foo"/>
+        <param name="user_pass" value="bar"/>
+        <param name="redirect_to" value="http://blog.nanthrax.net/wp-admin/"/>
+        <param name="testcookie" value="1"/>
+        <extractor clazz="org.apache.camel.processor.mashup.extractor.JsoupExtractor" append="true" mandatory="true">
+            <property name="query">div</property>
+            <property name="preserveHtml">true</property>
+        </extractor>
+    </page>
+
+    <page wait="10">
+        <url><![CDATA[http://www.google.com]]></url>
+        <extractor clazz="org.apache.camel.processor.mashup.extractor.JsoupExtractor">
+            <property name="query">body</property>
+        </extractor>
+    </page>
+
+</mashup>

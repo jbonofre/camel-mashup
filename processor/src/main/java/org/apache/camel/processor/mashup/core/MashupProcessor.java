@@ -59,9 +59,9 @@ public class MashupProcessor implements Processor {
         
         LOGGER.trace("Create the HTTP client");
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        ClientConnectionManager mgr = httpClient.getConnectionManager();
-        HttpParams params = httpClient.getParams();
-        httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, mgr.getSchemeRegistry()), params);
+        //ClientConnectionManager mgr = httpClient.getConnectionManager();
+        //HttpParams params = httpClient.getParams();
+        //httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, mgr.getSchemeRegistry()), params);
 
         CookieStore cookieStore = CookieStore.getInstance();
 
@@ -83,10 +83,15 @@ public class MashupProcessor implements Processor {
                 request = new HttpGet(url);
             }
 
+            LOGGER.trace("Replace params with param tags if exist");
             if (page.getParams() != null && page.getParams().size() > 0) {
                 BasicHttpParams httpParams = new BasicHttpParams();
                 for (Param param : page.getParams()) {
-                    httpParams.setParameter(param.getName(), param.getValue());
+                    String value = param.getValue();
+                    for (String header : in.getHeaders().keySet()) {
+                        value = value.replace("%" + header + "%", in.getHeader(header).toString());
+                    }
+                    httpParams.setParameter(param.getName(), value);
                 }
                 request.setParams(httpParams);
             }
@@ -117,7 +122,7 @@ public class MashupProcessor implements Processor {
             if (mashup.getCookie() != null) {
                 String cookieKey = (String) in.getHeader(mashup.getCookie().getKey());
                 if (cookieKey == null) {
-                    LOGGER.warn("Cookie key " + mashup.getCookie().getKey() + " is not found i nthe Camel \"in\" header");
+                    LOGGER.warn("Cookie key " + mashup.getCookie().getKey() + " is not found in the Camel \"in\" header");
                 } else {
                     LOGGER.trace("Populating the cookie store");
                     Header[] headers = response.getHeaders("Set-Cookie");
@@ -132,7 +137,7 @@ public class MashupProcessor implements Processor {
                     }
                 }
             }
-            
+
             if (page.getExtractors() != null && page.getExtractors().size() > 0) {
                 LOGGER.trace("Populate content to be used by extractors");
                 String content = EntityUtils.toString(entity);
@@ -144,10 +149,15 @@ public class MashupProcessor implements Processor {
                             throw new IllegalStateException("Extracted data is empty");
                         }
                         if (extractor.isAppend()) {
-                            out.setBody(out.getBody() + "<extract id=\"" + extractor.getId() + "\"><![CDATA[" + extractedData + "]]></extract>");
+                            if (out.getBody() == null) {
+                                out.setBody("<extract id=\"" + extractor.getId() + "\"><![CDATA[" + extractedData + "]]></extract>");
+                            } else {
+                                out.setBody(out.getBody() + "<extract id=\"" + extractor.getId() + "\"><![CDATA[" + extractedData + "]]></extract>");
+                            }
                         }
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                     LOGGER.warn("An exception occurs during the extraction",e);
                     LOGGER.warn("Calling the error handler");
                     exchange.setException(e);
@@ -166,6 +176,8 @@ public class MashupProcessor implements Processor {
                     }
                 }
 
+            } else {
+                // consume the response anyway
             }
 
             if (page.getWait() > 0) {
@@ -188,7 +200,7 @@ public class MashupProcessor implements Processor {
         if (extractor.getProperties() != null) {
             for (Property property : extractor.getProperties()) {
                 LOGGER.trace("Setting property " + property.getName() + " with value " + property.getValue());
-                PropertyUtils.setProperty(extractorBean, property.getName(), property.getValue());   
+                PropertyUtils.setProperty(extractorBean, property.getName(), property.getValue());
             }
         }
         return extractorBean;
