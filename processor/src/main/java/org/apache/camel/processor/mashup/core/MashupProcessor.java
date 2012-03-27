@@ -83,11 +83,13 @@ public class MashupProcessor implements Processor {
                 request = new HttpGet(url);
             }
 
-            BasicHttpParams httpParams = new BasicHttpParams();
-            for (Param param : page.getParams()) {
-                httpParams.setParameter(param.getName(), param.getValue());
+            if (page.getParams() != null && page.getParams().size() > 0) {
+                BasicHttpParams httpParams = new BasicHttpParams();
+                for (Param param : page.getParams()) {
+                    httpParams.setParameter(param.getName(), param.getValue());
+                }
+                request.setParams(httpParams);
             }
-            request.setParams(httpParams);
 
             if (mashup.getCookie() != null) {
                 LOGGER.trace("Looking for an existing cookie");
