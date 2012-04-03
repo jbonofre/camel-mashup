@@ -17,6 +17,8 @@
 
 &nbsp; &lt;cookie key="LOGIN" name="JSESSIONID" domain="mydomain.com" path="/"/&gt;<br/>
 
+&nbsp; &lt;proxy scheme="NTLM" host="ip" port="80" username="user" password="password" workstation="workstation" domain="domain"/&gt;<br/>
+
 &nbsp; &lt;page url="http://www.example.org/page1" method="POST"/&gt;<br/>
 
 &nbsp; &lt;page url="http://www.example.org/page2" wait="3"&gt;<br/>
@@ -47,6 +49,9 @@
         <p>
             The cookie tag allows you to configure the cookie store. Camel Mashup is able to store cookies and map
             a cookie to a Camel header.
+        </p>
+        <p>
+            The proxy tag allows you to configure a HTTP proxy. It supports both Basic and NTLM authentication.
         </p>
         <p>
             The page tag is a HTTP page, connecting using the URL attribute. By default, the HTTP method used is GET, but
