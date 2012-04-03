@@ -10,6 +10,7 @@ public class Mashup {
     
     private String id;
     private Cookie cookie;
+    private Proxy proxy;
     private List<Page> pages = new LinkedList<Page>();
 
     public String getId() {
@@ -26,6 +27,14 @@ public class Mashup {
 
     public void setCookie(Cookie cookie) {
         this.cookie = cookie;
+    }
+    
+    public Proxy getProxy() {
+        return proxy;
+    }
+    
+    public void setProxy(Proxy proxy) {
+        this.proxy = proxy;
     }
 
     public List<Page> getPages() {
@@ -50,6 +59,10 @@ public class Mashup {
         digester.addObjectCreate("mashup/cookie", Cookie.class);
         digester.addSetProperties("mashup/cookie");
         digester.addSetNext("mashup/cookie", "setCookie");
+        
+        digester.addObjectCreate("mashup/proxy", Proxy.class);
+        digester.addSetProperties("mashup/proxy");
+        digester.addSetNext("mashup/proxy", "setProxy");
         
         digester.addObjectCreate("mashup/page", Page.class);
         digester.addSetProperties("mashup/page");     

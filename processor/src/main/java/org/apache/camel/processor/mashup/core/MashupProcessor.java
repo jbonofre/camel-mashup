@@ -8,12 +8,22 @@ import org.apache.camel.processor.mashup.model.*;
 import org.apache.commons.beanutils.*;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.NTCredentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.auth.params.AuthPNames;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.params.AuthPolicy;
 import org.apache.http.client.utils.URIUtils;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.conn.params.ConnRouteParamBean;
+import org.apache.http.impl.auth.BasicSchemeFactory;
+import org.apache.http.impl.auth.NTLMSchemeFactory;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -25,6 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Camel processor loading the navigation file and extract data
@@ -62,6 +74,34 @@ public class MashupProcessor implements Processor {
         ClientConnectionManager mgr = httpClient.getConnectionManager();
         HttpParams params = httpClient.getParams();
         httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, mgr.getSchemeRegistry()), params);
+        
+        if (mashup.getProxy() != null) {
+            LOGGER.trace("Registering the HTTP client proxy");
+
+            if (mashup.getProxy().getScheme().equalsIgnoreCase("NTLM")) {
+                LOGGER.trace("Registering a NTLM authenticated proxy");
+                httpClient.getAuthSchemes().register("ntlm", new NTLMSchemeFactory());
+                NTCredentials credentials = new NTCredentials(mashup.getProxy().getUsername(),
+                        mashup.getProxy().getPassword(),
+                        mashup.getProxy().getWorkstation(),
+                        mashup.getProxy().getDomain());
+                httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, credentials);
+                HttpHost proxy = new HttpHost(mashup.getProxy().getHost(),
+                        Integer.parseInt(mashup.getProxy().getPort()));
+                httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+            } else if (mashup.getProxy().getScheme().equalsIgnoreCase("Basic")) {
+                LOGGER.trace("Registering a Basic authenticated proxy");
+                httpClient.getAuthSchemes().register("basic", new BasicSchemeFactory());
+                UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(mashup.getProxy().getUsername(),
+                        mashup.getProxy().getPassword());
+                httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, credentials);
+                HttpHost proxy = new HttpHost(mashup.getProxy().getHost(),
+                        Integer.parseInt(mashup.getProxy().getPort()));
+                httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+            } else {
+                throw new IllegalArgumentException("Proxy authentication " + mashup.getProxy().getScheme() + " not supported");
+            }
+        }
 
         CookieStore cookieStore = CookieStore.getInstance();
 
