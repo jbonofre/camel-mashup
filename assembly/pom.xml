@@ -16,7 +16,7 @@
     <name>Apache Camel :: Processor :: Website Mashup :: Assembly</name>
 
     <properties>
-        <commons-beanutils.bundle.version>1.8.2_3</commons-beanutils.bundle.version>
+        <commons-beanutils.bundle.version>1.8.3_1</commons-beanutils.bundle.version>
     </properties>
 
     <build>

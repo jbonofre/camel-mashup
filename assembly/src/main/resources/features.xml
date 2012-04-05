@@ -3,7 +3,7 @@
 
     <feature name="camel-mashup" version="${project.version}" resolver="(obr)">
         <feature version="[2.8,3)">camel-core</feature>
-        <bundle dependency="true">mvn:commons-beanutils/commons-beanutils-core/${commons-beanutils.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-beanutils/${commons-beanutils.bundle.version}</bundle>
         <bundle dependency="true">mvn:org.apache.commons/commons-digester3/${commons-digester.version}</bundle>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclient.version}</bundle>
         <bundle dependency="true">mvn:org.jsoup/jsoup/${jsoup.version}</bundle>
