@@ -6,14 +6,12 @@ import org.apache.camel.Processor;
 import org.apache.camel.processor.mashup.api.IExtractor;
 import org.apache.camel.processor.mashup.model.*;
 import org.apache.commons.beanutils.*;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
+import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.auth.params.AuthPNames;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -28,8 +26,10 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,9 +71,9 @@ public class MashupProcessor implements Processor {
         
         LOGGER.trace("Create the HTTP client");
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        ClientConnectionManager mgr = httpClient.getConnectionManager();
-        HttpParams params = httpClient.getParams();
-        httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, mgr.getSchemeRegistry()), params);
+        // ClientConnectionManager mgr = httpClient.getConnectionManager();
+        // HttpParams params = httpClient.getParams();
+        // httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, mgr.getSchemeRegistry()), params);
         
         if (mashup.getProxy() != null) {
             LOGGER.trace("Registering the HTTP client proxy");
@@ -115,25 +115,39 @@ public class MashupProcessor implements Processor {
                 url = url.replace("%" + header + "%", in.getHeader(header).toString());
             }
 
-            LOGGER.trace("Constructing the HTTP request");
-            HttpUriRequest request = null;
-            if (page.getMethod() != null && page.getMethod().equalsIgnoreCase("POST")) {
-                request = new HttpPost(url);
-            } else {
-                request = new HttpGet(url);
-            }
-
             LOGGER.trace("Replace params with param tags if exist");
+            List<NameValuePair> nvps = new ArrayList<NameValuePair>();
             if (page.getParams() != null && page.getParams().size() > 0) {
-                BasicHttpParams httpParams = new BasicHttpParams();
                 for (Param param : page.getParams()) {
                     String value = param.getValue();
                     for (String header : in.getHeaders().keySet()) {
                         value = value.replace("%" + header + "%", in.getHeader(header).toString());
                     }
-                    httpParams.setParameter(param.getName(), value);
+                    nvps.add(new BasicNameValuePair(param.getName(), value));
                 }
-                request.setParams(httpParams);
+            }
+
+            LOGGER.trace("Constructing the HTTP request");
+            HttpUriRequest request = null;
+            if (page.getMethod() != null && page.getMethod().equalsIgnoreCase("POST")) {
+                HttpPost postRequest = new HttpPost(url);
+                if (nvps.size() > 0) {
+                    postRequest.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+                }
+                request = postRequest;
+            } else {
+                if ((nvps.size() > 0)) {
+                    if (!url.contains("?")) {
+                        url = url + "?";
+                    }
+                    for (NameValuePair nvp : nvps) {
+                        if (!url.endsWith("&") && (!url.endsWith("?"))) {
+                            url = url + "&";
+                        }
+                        url = url + nvp.getName() + "=" + nvp.getValue();
+                    }
+                }
+                request = new HttpGet(url);
             }
 
             if (mashup.getCookie() != null) {
@@ -217,7 +231,7 @@ public class MashupProcessor implements Processor {
                 }
 
             } else {
-                // consume the response anyway
+                EntityUtils.toString(entity);
             }
 
             if (page.getWait() > 0) {
