@@ -156,13 +156,13 @@ public class MashupProcessor implements Processor {
                 if (cookieKey == null) {
                     LOGGER.warn("Cookie key " + mashup.getCookie().getKey() + " is not found in the Camel \"in\" header");
                 } else {
-                    BasicClientCookie basicClientCookie = cookieStore.getCookie(cookieKey);
-                    if (basicClientCookie == null) {
+                    org.apache.http.cookie.Cookie storedCookie = cookieStore.getCookie(cookieKey);
+                    if (storedCookie == null) {
                         LOGGER.debug("No cookie yet exist for " + cookieKey);
                     } else {
                         LOGGER.debug("A cookie exists for " + cookieKey + " use it for the request");
                         BasicCookieStore basicCookieStore = new BasicCookieStore();
-                        basicCookieStore.addCookie(basicClientCookie);
+                        basicCookieStore.addCookie(storedCookie);
                         httpClient.setCookieStore(basicCookieStore);
                     }
                 }
@@ -179,14 +179,13 @@ public class MashupProcessor implements Processor {
                     LOGGER.warn("Cookie key " + mashup.getCookie().getKey() + " is not found in the Camel \"in\" header");
                 } else {
                     LOGGER.trace("Populating the cookie store");
-                    Header[] headers = response.getHeaders("Set-Cookie");
-                    for (Header header : headers) {
-                        if (header.getName().equals(mashup.getCookie().getName())) {
-                            BasicClientCookie basicClientCookie = new BasicClientCookie(mashup.getCookie().getName(), header.getValue());
-                            basicClientCookie.setDomain(mashup.getCookie().getDomain());
-                            basicClientCookie.setPath(mashup.getCookie().getPath());
-                            cookieStore.addCookie(cookieKey, basicClientCookie);
-                            break;
+                    List<org.apache.http.cookie.Cookie> cookies = httpClient.getCookieStore().getCookies();
+                    for (org.apache.http.cookie.Cookie cookie : cookies) {
+                        if (cookie.getName().equals(mashup.getCookie().getName())
+                                && cookie.getDomain().equals(mashup.getCookie().getDomain())
+                                && cookie.getPath().equals(mashup.getCookie().getPath())) {
+                            LOGGER.debug("Storing cookie " + cookie.getName() + " = " + cookie.getValue());
+                            cookieStore.addCookie(cookieKey, cookie);
                         }
                     }
                 }

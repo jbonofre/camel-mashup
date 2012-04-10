@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class CookieStore {
     
-    private Map<String, BasicClientCookie> map;
+    private Map<String, org.apache.http.cookie.Cookie> map;
     
     private static CookieStore _singleton = null;
 
@@ -22,14 +22,14 @@ public class CookieStore {
     }
     
     private CookieStore() {
-        map = new HashMap<String, BasicClientCookie>();
+        map = new HashMap<String, org.apache.http.cookie.Cookie>();
     }
     
-    public void addCookie(String key, BasicClientCookie cookie) {
+    public void addCookie(String key, org.apache.http.cookie.Cookie cookie) {
         map.put(key, cookie);
     }
     
-    public BasicClientCookie getCookie(String key) {
+    public org.apache.http.cookie.Cookie getCookie(String key) {
         return map.get(key);
     }
 
