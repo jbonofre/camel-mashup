@@ -7,7 +7,7 @@
         <bundle dependency="true">mvn:org.apache.commons/commons-digester3/${commons-digester.version}</bundle>
         <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclient.version}</bundle>
         <bundle dependency="true">mvn:org.jsoup/jsoup/${jsoup.version}</bundle>
-        <bundle>mvn:org.apache.camel.processor/camel-mashup/${project.version}</bundle>
+        <bundle>mvn:org.apache.camel.processor/org.apache.camel.processor.mashup/${project.version}</bundle>
     </feature>
 
 </features>
