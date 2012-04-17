@@ -15,7 +15,7 @@
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;<br/>
 &lt;mashup id="test"&gt;<br/>
 
-&nbsp; &lt;cookie key="LOGIN" name="JSESSIONID" domain="mydomain.com" path="/"/&gt;<br/>
+&nbsp; &lt;cookiestore key="%LOGIN%"/&gt;<br/>
 
 &nbsp; &lt;proxy scheme="NTLM" host="ip" port="80" username="user" password="password" workstation="workstation" domain="domain"/&gt;<br/>
 
@@ -47,8 +47,9 @@
             </code>
         </p>
         <p>
-            The cookie tag allows you to configure the cookie store. Camel Mashup is able to store cookies and map
-            a cookie to a Camel header.
+            The cookiestore tag allows you to configure a cookie store. Camel Mashup is able to store cookies and map
+            a cookie to a Camel header (using %HEADER% notation). All HTTP client cookies are stored in the store and
+            injected in the next iteration.
         </p>
         <p>
             The proxy tag allows you to configure a HTTP proxy. It supports both Basic and NTLM authentication.

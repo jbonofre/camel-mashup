@@ -22,9 +22,8 @@ public class TestDigester {
         assertEquals("test", mashup.getId());
         
         // get the cookies
-        Cookie cookie = mashup.getCookie();
-        assertNotNull(cookie);
-        assertEquals("JSESSIONID", cookie.getName());
+        CookieStore cookieStore = mashup.getCookieStore();
+        assertNotNull(cookieStore);
         
         // get the proxy
         Proxy proxy = mashup.getProxy();

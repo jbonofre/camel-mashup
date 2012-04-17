@@ -5,30 +5,24 @@ import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.processor.mashup.api.IExtractor;
 import org.apache.camel.processor.mashup.model.*;
-import org.apache.commons.beanutils.*;
-import org.apache.http.*;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.auth.params.AuthPNames;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.params.AuthPolicy;
-import org.apache.http.client.utils.URIUtils;
-import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.conn.params.ConnRouteParamBean;
 import org.apache.http.impl.auth.BasicSchemeFactory;
 import org.apache.http.impl.auth.NTLMSchemeFactory;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -42,39 +36,39 @@ import java.util.List;
  * Camel processor loading the navigation file and extract data
  */
 public class MashupProcessor implements Processor {
-    
+
     private final static transient Logger LOGGER = LoggerFactory.getLogger(MashupProcessor.class);
-    
+
     public final static String DEFAULT_STORE = "data/mashup";
     public final static String MASHUP_ID_HEADER = "MASHUP_ID";
     public final static String MASHUP_STORE_HEADER = "MASHUP_STORE";
-    
+
     public void process(Exchange exchange) throws Exception {
         LOGGER.trace("Get the Camel in message");
         Message in = exchange.getIn();
-        
+
         LOGGER.trace("Get the Camel out message");
         Message out = exchange.getOut();
-        
+
         LOGGER.trace("Get the {} header", MASHUP_ID_HEADER);
         String mashupId = (String) in.getHeader(MASHUP_ID_HEADER);
         LOGGER.debug("Mashup ID: {}", mashupId);
-        
+
         LOGGER.trace("Get the {} header", MASHUP_STORE_HEADER);
         String store = (String) in.getHeader(MASHUP_STORE_HEADER);
         LOGGER.debug("Mashup Store: {}", store);
-        
+
         LOGGER.debug("Digesting the navigation file {}/{}.xml", store, mashupId);
         FileInputStream fileInputStream = new FileInputStream(store + "/" + mashupId + ".xml");
         Mashup mashup = new Mashup();
         mashup.digeste(fileInputStream);
-        
+
         LOGGER.trace("Create the HTTP client");
         DefaultHttpClient httpClient = new DefaultHttpClient();
         // ClientConnectionManager mgr = httpClient.getConnectionManager();
         // HttpParams params = httpClient.getParams();
         // httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, mgr.getSchemeRegistry()), params);
-        
+
         if (mashup.getProxy() != null) {
             LOGGER.trace("Registering the HTTP client proxy");
 
@@ -150,21 +144,21 @@ public class MashupProcessor implements Processor {
                 request = new HttpGet(url);
             }
 
-            if (mashup.getCookie() != null) {
-                LOGGER.trace("Looking for an existing cookie");
-                String cookieKey = (String) in.getHeader(mashup.getCookie().getKey());
+            if (mashup.getCookieStore() != null) {
+                LOGGER.trace("Looking cookies in the cookie store");
+                String cookieKey = mashup.getCookieStore().getKey();
                 if (cookieKey == null) {
-                    LOGGER.warn("Cookie key " + mashup.getCookie().getKey() + " is not found in the Camel \"in\" header");
-                } else {
-                    org.apache.http.cookie.Cookie storedCookie = cookieStore.getCookie(cookieKey);
-                    if (storedCookie == null) {
-                        LOGGER.debug("No cookie yet exist for " + cookieKey);
-                    } else {
-                        LOGGER.debug("A cookie exists for " + cookieKey + " use it for the request");
-                        BasicCookieStore basicCookieStore = new BasicCookieStore();
-                        basicCookieStore.addCookie(storedCookie);
-                        httpClient.setCookieStore(basicCookieStore);
-                    }
+                    throw new IllegalArgumentException("CookieStore key is mandatory");
+                }
+                for (String header : in.getHeaders().keySet()) {
+                    cookieKey = cookieKey.replace("%" + header + "%", in.getHeader(header).toString());
+                }
+                List<org.apache.http.cookie.Cookie> storedCookies = cookieStore.getCookies(cookieKey);
+                for (org.apache.http.cookie.Cookie cookie : storedCookies) {
+                    LOGGER.trace("Adding cookie " + cookie.getName() + " in the HTTP client");
+                    BasicCookieStore basicCookieStore = new BasicCookieStore();
+                    basicCookieStore.addCookie(cookie);
+                    httpClient.setCookieStore(basicCookieStore);
                 }
             } else {
                 LOGGER.warn("No cookie configuration defined");
@@ -172,22 +166,21 @@ public class MashupProcessor implements Processor {
 
             HttpResponse response = httpClient.execute(request);
             HttpEntity entity = response.getEntity();
-            
-            if (mashup.getCookie() != null) {
-                String cookieKey = (String) in.getHeader(mashup.getCookie().getKey());
+
+            if (mashup.getCookieStore() != null) {
+                String cookieKey = mashup.getCookieStore().getKey();
                 if (cookieKey == null) {
-                    LOGGER.warn("Cookie key " + mashup.getCookie().getKey() + " is not found in the Camel \"in\" header");
-                } else {
-                    LOGGER.trace("Populating the cookie store");
-                    List<org.apache.http.cookie.Cookie> cookies = httpClient.getCookieStore().getCookies();
-                    for (org.apache.http.cookie.Cookie cookie : cookies) {
-                        if (cookie.getName().equals(mashup.getCookie().getName())
-                                && cookie.getDomain().equals(mashup.getCookie().getDomain())
-                                && cookie.getPath().equals(mashup.getCookie().getPath())) {
-                            LOGGER.debug("Storing cookie " + cookie.getName() + " = " + cookie.getValue());
-                            cookieStore.addCookie(cookieKey, cookie);
-                        }
-                    }
+                    throw new IllegalArgumentException("CookieStore key is mandatory");
+                }
+                for (String header : in.getHeaders().keySet()) {
+                    cookieKey = cookieKey.replace("%" + header + "%", in.getHeader(header).toString());
+                }
+                LOGGER.trace("Populating the cookie store");
+                List<org.apache.http.cookie.Cookie> cookies = httpClient.getCookieStore().getCookies();
+
+                for (org.apache.http.cookie.Cookie cookie : cookies) {
+                    LOGGER.trace("Storing cookie " + cookie.getName());
+                    cookieStore.addCookie(cookieKey, cookie);
                 }
             }
 
@@ -211,7 +204,7 @@ public class MashupProcessor implements Processor {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    LOGGER.warn("An exception occurs during the extraction",e);
+                    LOGGER.warn("An exception occurs during the extraction", e);
                     LOGGER.warn("Calling the error handler");
                     exchange.setException(e);
                     out.setFault(true);
@@ -238,11 +231,12 @@ public class MashupProcessor implements Processor {
             }
 
         }
+
     }
 
     /**
      * Create a new instance of a extractor
-     * 
+     *
      * @param extractor the extractor model object.
      * @return the IExtractor object.
      */

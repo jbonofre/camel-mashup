@@ -9,7 +9,7 @@ import java.util.List;
 public class Mashup {
     
     private String id;
-    private Cookie cookie;
+    private CookieStore cookieStore;
     private Proxy proxy;
     private List<Page> pages = new LinkedList<Page>();
 
@@ -21,12 +21,12 @@ public class Mashup {
         this.id = id;
     }
 
-    public Cookie getCookie() {
-        return cookie;
+    public CookieStore getCookieStore() {
+        return cookieStore;
     }
 
-    public void setCookie(Cookie cookie) {
-        this.cookie = cookie;
+    public void setCookieStore(CookieStore cookieStore) {
+        this.cookieStore = cookieStore;
     }
     
     public Proxy getProxy() {
@@ -56,9 +56,9 @@ public class Mashup {
 
         digester.addSetProperties("mashup");
         
-        digester.addObjectCreate("mashup/cookie", Cookie.class);
-        digester.addSetProperties("mashup/cookie");
-        digester.addSetNext("mashup/cookie", "setCookie");
+        digester.addObjectCreate("mashup/cookiestore", CookieStore.class);
+        digester.addSetProperties("mashup/cookiestore");
+        digester.addSetNext("mashup/cookiestore", "setCookieStore");
         
         digester.addObjectCreate("mashup/proxy", Proxy.class);
         digester.addSetProperties("mashup/proxy");
