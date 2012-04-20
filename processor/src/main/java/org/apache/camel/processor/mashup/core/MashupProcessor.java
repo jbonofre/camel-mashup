@@ -154,11 +154,15 @@ public class MashupProcessor implements Processor {
                     cookieKey = cookieKey.replace("%" + header + "%", in.getHeader(header).toString());
                 }
                 List<org.apache.http.cookie.Cookie> storedCookies = cookieStore.getCookies(cookieKey);
-                for (org.apache.http.cookie.Cookie cookie : storedCookies) {
-                    LOGGER.trace("Adding cookie " + cookie.getName() + " in the HTTP client");
-                    BasicCookieStore basicCookieStore = new BasicCookieStore();
-                    basicCookieStore.addCookie(cookie);
-                    httpClient.setCookieStore(basicCookieStore);
+                if (storedCookies != null) {
+                    for (org.apache.http.cookie.Cookie cookie : storedCookies) {
+                        LOGGER.trace("Adding cookie " + cookie.getName() + " in the HTTP client");
+                        BasicCookieStore basicCookieStore = new BasicCookieStore();
+                        basicCookieStore.addCookie(cookie);
+                        httpClient.setCookieStore(basicCookieStore);
+                    }
+                } else {
+                    LOGGER.trace("No cookie yet exist for {}", cookieKey);
                 }
             } else {
                 LOGGER.warn("No cookie configuration defined");
@@ -202,6 +206,9 @@ public class MashupProcessor implements Processor {
                             }
                         }
                     }
+                    if (out.getBody() != null) {
+                        out.setBody("<mashup>" + out.getBody() + "</mashup>");
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     LOGGER.warn("An exception occurs during the extraction", e);
@@ -215,9 +222,19 @@ public class MashupProcessor implements Processor {
                         for (Extractor extractor : page.getErrorHandler().getExtractors()) {
                             IExtractor extractorBean = this.instantiateExtractor(extractor);
                             String extractedData = extractorBean.extract(content);
-                            if (extractedData != null) {
-                                out.setBody(out.getBody() + extractedData);
+                            if (extractor.isMandatory() && (extractedData == null || extractedData.isEmpty())) {
+                                throw new IllegalStateException("Extracted data is empty");
                             }
+                            if (extractor.isAppend()) {
+                                if (out.getBody() == null) {
+                                    out.setBody("<extract id=\"" + extractor.getId() + "\"><![CDATA[" + extractedData + "]]></extract>");
+                                } else {
+                                    out.setBody(out.getBody() + "<extract id=\"" + extractor.getId() + "\"><![CDATA[" + extractedData + "]]></extract>");
+                                }
+                            }
+                        }
+                        if (out.getBody() != null) {
+                            out.setBody("<mashup>" + out.getBody() + "</mashup>");
                         }
                     }
                 }
