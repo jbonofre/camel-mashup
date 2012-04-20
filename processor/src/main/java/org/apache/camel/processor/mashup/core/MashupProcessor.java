@@ -97,8 +97,6 @@ public class MashupProcessor implements Processor {
             }
         }
 
-        CookieStore cookieStore = CookieStore.getInstance();
-
         LOGGER.trace("Iterate in the pages");
         for (Page page : mashup.getPages()) {
 
@@ -148,12 +146,13 @@ public class MashupProcessor implements Processor {
                 LOGGER.trace("Looking cookies in the cookie store");
                 String cookieKey = mashup.getCookieStore().getKey();
                 if (cookieKey == null) {
-                    throw new IllegalArgumentException("CookieStore key is mandatory");
+                    throw new IllegalArgumentException("FileCookieStore key is mandatory");
                 }
                 for (String header : in.getHeaders().keySet()) {
                     cookieKey = cookieKey.replace("%" + header + "%", in.getHeader(header).toString());
                 }
-                List<org.apache.http.cookie.Cookie> storedCookies = cookieStore.getCookies(cookieKey);
+                FileCookieStore fileCookieStore = new FileCookieStore();
+                List<org.apache.http.cookie.Cookie> storedCookies = fileCookieStore.getCookies(cookieKey);
                 if (storedCookies != null) {
                     for (org.apache.http.cookie.Cookie cookie : storedCookies) {
                         LOGGER.trace("Adding cookie " + cookie.getName() + " in the HTTP client");
@@ -174,7 +173,7 @@ public class MashupProcessor implements Processor {
             if (mashup.getCookieStore() != null) {
                 String cookieKey = mashup.getCookieStore().getKey();
                 if (cookieKey == null) {
-                    throw new IllegalArgumentException("CookieStore key is mandatory");
+                    throw new IllegalArgumentException("FileCookieStore key is mandatory");
                 }
                 for (String header : in.getHeaders().keySet()) {
                     cookieKey = cookieKey.replace("%" + header + "%", in.getHeader(header).toString());
@@ -182,9 +181,10 @@ public class MashupProcessor implements Processor {
                 LOGGER.trace("Populating the cookie store");
                 List<org.apache.http.cookie.Cookie> cookies = httpClient.getCookieStore().getCookies();
 
+                FileCookieStore fileCookieStore = new FileCookieStore();
                 for (org.apache.http.cookie.Cookie cookie : cookies) {
                     LOGGER.trace("Storing cookie " + cookie.getName());
-                    cookieStore.addCookie(cookieKey, cookie);
+                    fileCookieStore.addCookie(cookieKey, cookie);
                 }
             }
 
