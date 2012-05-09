@@ -6,10 +6,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.processor.mashup.api.IExtractor;
 import org.apache.camel.processor.mashup.model.*;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -154,12 +151,12 @@ public class MashupProcessor implements Processor {
                 FileCookieStore fileCookieStore = new FileCookieStore();
                 List<org.apache.http.cookie.Cookie> storedCookies = fileCookieStore.getCookies(cookieKey);
                 if (storedCookies != null) {
+                    BasicCookieStore basicCookieStore = new BasicCookieStore();
                     for (org.apache.http.cookie.Cookie cookie : storedCookies) {
                         LOGGER.trace("Adding cookie " + cookie.getName() + " in the HTTP client");
-                        BasicCookieStore basicCookieStore = new BasicCookieStore();
                         basicCookieStore.addCookie(cookie);
-                        httpClient.setCookieStore(basicCookieStore);
                     }
+                    httpClient.setCookieStore(basicCookieStore);
                 } else {
                     LOGGER.trace("No cookie yet exist for {}", cookieKey);
                 }
@@ -169,6 +166,22 @@ public class MashupProcessor implements Processor {
 
             HttpResponse response = httpClient.execute(request);
             HttpEntity entity = response.getEntity();
+
+            StatusLine status = response.getStatusLine();
+            if (status.getStatusCode() != HttpStatus.SC_OK) {
+                switch (status.getStatusCode()) {
+                    case HttpStatus.SC_MOVED_PERMANENTLY:
+                    case HttpStatus.SC_MOVED_TEMPORARILY:
+                        LOGGER.warn("Redirection code: " + status.getStatusCode());
+                        EntityUtils.consume(entity);
+                        Header locationHeader = response.getFirstHeader("location");
+                        LOGGER.warn("Redirection location: " + locationHeader.getValue());
+
+                        request = new HttpPost(locationHeader.getValue());
+                        response = httpClient.execute(request);
+                        entity = response.getEntity();
+                }
+            }
 
             if (mashup.getCookieStore() != null) {
                 String cookieKey = mashup.getCookieStore().getKey();
@@ -223,7 +236,7 @@ public class MashupProcessor implements Processor {
                             IExtractor extractorBean = this.instantiateExtractor(extractor);
                             String extractedData = extractorBean.extract(content);
                             if (extractor.isMandatory() && (extractedData == null || extractedData.isEmpty())) {
-                                throw new IllegalStateException("Extracted data is empty");
+                                throw new IllegalStateException(extractor.getId());
                             }
                             if (extractor.isAppend()) {
                                 if (out.getBody() == null) {
