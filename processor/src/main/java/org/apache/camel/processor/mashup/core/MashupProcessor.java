@@ -209,7 +209,7 @@ public class MashupProcessor implements Processor {
                         IExtractor extractorBean = this.instantiateExtractor(extractor);
                         String extractedData = extractorBean.extract(content);
                         if (extractor.isMandatory() && (extractedData == null || extractedData.isEmpty())) {
-                            throw new IllegalStateException("Extracted data is empty");
+                            throw new IllegalStateException("Extracted data is empty (id = " + extractor.getId() + ")");
                         }
                         if (extractor.isAppend()) {
                             if (out.getBody() == null) {
@@ -258,6 +258,11 @@ public class MashupProcessor implements Processor {
 
             if (page.getWait() > 0) {
                 Thread.sleep(page.getWait() * 1000);
+            }
+
+            if (out.isFault()) {
+                LOGGER.warn("Loop is break because one data mandatory");
+                break;
             }
 
         }
