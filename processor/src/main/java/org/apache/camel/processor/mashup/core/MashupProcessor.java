@@ -148,8 +148,8 @@ public class MashupProcessor implements Processor {
                 for (String header : in.getHeaders().keySet()) {
                     cookieKey = cookieKey.replace("%" + header + "%", in.getHeader(header).toString());
                 }
-                FileCookieStore fileCookieStore = new FileCookieStore();
-                List<org.apache.http.cookie.Cookie> storedCookies = fileCookieStore.getCookies(cookieKey);
+                FileCookieStore fileCookieStore = new FileCookieStore(cookieKey);
+                List<org.apache.http.cookie.Cookie> storedCookies = fileCookieStore.getCookies();
                 if (storedCookies != null) {
                     BasicCookieStore basicCookieStore = new BasicCookieStore();
                     for (org.apache.http.cookie.Cookie cookie : storedCookies) {
@@ -194,10 +194,10 @@ public class MashupProcessor implements Processor {
                 LOGGER.trace("Populating the cookie store");
                 List<org.apache.http.cookie.Cookie> cookies = httpClient.getCookieStore().getCookies();
 
-                FileCookieStore fileCookieStore = new FileCookieStore();
+                FileCookieStore fileCookieStore = new FileCookieStore(cookieKey);
                 for (org.apache.http.cookie.Cookie cookie : cookies) {
                     LOGGER.trace("Storing cookie " + cookie.getName());
-                    fileCookieStore.addCookie(cookieKey, cookie);
+                    fileCookieStore.addCookie(cookie);
                 }
             }
 

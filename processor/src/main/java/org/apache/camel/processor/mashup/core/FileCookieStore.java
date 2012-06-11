@@ -7,66 +7,50 @@ import java.io.*;
 import java.util.*;
 import org.apache.commons.codec.binary.Base64;
 
-/**
- * Singleton to share a cookie store.
- */
 public class FileCookieStore {
 
     private String fileStorePath;
 
-    public FileCookieStore() throws Exception {
-        fileStorePath = System.getProperty("cookiestore.file", System.getProperty("karaf.data") + "/cookies.properties");
-        File file = new File(fileStorePath);
-        if (!file.exists()) {
-            file.createNewFile();
-        }
+    public FileCookieStore(String key) throws Exception {
+        File fileStoreDir = new File(System.getProperty("cookiestore.dir", System.getProperty("karaf.data") + "/cookies"));
+        fileStoreDir.mkdirs();
+        fileStorePath = fileStoreDir + "/" + key;
     }
 
-    public synchronized void addCookie(String key, Cookie cookie) throws Exception {
-        // load the cookies.properties
-        Properties properties = new Properties();
-        properties.load(new FileInputStream(fileStorePath));
-        // load the BasicCookieStore for the key
-        BasicCookieStore cookieStore = this.unmarshalCookieStore(properties.getProperty(key));
+    public synchronized void addCookie(Cookie cookie) throws Exception {
+        File file = new File(fileStorePath);
+        BasicCookieStore cookieStore = null;
+        if (file.exists()) {
+            // load the cookies file
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileStorePath));
+            cookieStore = (BasicCookieStore) ois.readObject();
+        }
         if (cookieStore == null) {
             cookieStore = new BasicCookieStore();
         }
         // add the cookie in the store
         cookieStore.addCookie(cookie);
         // serialize the cookie store
-        properties.setProperty(key, marshalCookieStore(cookieStore));
-        properties.store(new FileOutputStream(fileStorePath), null);
-    }
-
-    public synchronized List<org.apache.http.cookie.Cookie> getCookies(String key) throws Exception {
-        // load the cookies.properties
-        Properties properties = new Properties();
-        properties.load(new FileInputStream(fileStorePath));
-        // load the BasicCookieStore for the key
-        BasicCookieStore cookieStore = this.unmarshalCookieStore(properties.getProperty(key));
-        if (cookieStore == null) {
-            cookieStore = new BasicCookieStore();
-        }
-        return cookieStore.getCookies();
-    }
-
-    private synchronized BasicCookieStore unmarshalCookieStore(String data) throws Exception {
-        if (data == null)
-            return null;
-        byte[] rawStore = Base64.decodeBase64(data);
-        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(rawStore));
-        BasicCookieStore cookieStore = (BasicCookieStore) ois.readObject();
-        ois.close();
-        return cookieStore;
-    }
-
-    private synchronized String marshalCookieStore(BasicCookieStore cookieStore) throws Exception {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileStorePath));
         oos.writeObject(cookieStore);
         oos.flush();
         oos.close();
-        return new String(Base64.encodeBase64(bos.toByteArray()));
+    }
+
+    public synchronized List<org.apache.http.cookie.Cookie> getCookies() throws Exception {
+        // load the cookies file
+        File file = new File(fileStorePath);
+        BasicCookieStore cookieStore = null;
+        if (file.exists()) {
+            // load the cookies file
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileStorePath));
+            cookieStore = (BasicCookieStore) ois.readObject();
+        }
+        if (cookieStore == null) {
+            cookieStore = new BasicCookieStore();
+        }
+        // return the cookies
+        return cookieStore.getCookies();
     }
 
 }
