@@ -13,7 +13,7 @@
         </p>
         <p>
             <code>
-                karaf@root> features:addurl mvn:org.apache.camel.processor/camel-mashup/2.8.2-SNAPSHOT/xml/features
+                karaf@root> features:addurl mvn:org.apache.camel.processor/camel-mashup/2.10.4-SNAPSHOT/xml/features
             </code>
         </p>
         <p>
