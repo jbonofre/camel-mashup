@@ -5,7 +5,7 @@
 
     <groupId>org.apache.camel.processor</groupId>
     <artifactId>camel-mashup</artifactId>
-    <version>2.8.2-SNAPSHOT</version>
+    <version>2.10.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Apache Camel :: Processor :: Website Mashup</name>
     <description>
@@ -19,12 +19,12 @@
     </modules>
 
     <properties>
-        <camel.version>2.8.2</camel.version>
+        <camel.version>2.10.4</camel.version>
         <commons-beanutils.version>1.8.3</commons-beanutils.version>
-        <commons-codec.version>1.6</commons-codec.version>
+        <commons-codec.version>1.8</commons-codec.version>
         <commons-digester.version>3.2</commons-digester.version>
         <commons-io.version>2.1</commons-io.version>
-        <httpclient.version>4.1.3</httpclient.version>
+        <httpclient.version>4.2.2</httpclient.version>
         <junit.version>4.10</junit.version>
         <jsoup.version>1.6.1</jsoup.version>
         <slf4j.version>1.6.4</slf4j.version>
